@@ -58,3 +58,5 @@
 /Users/zuleiha/Desktop/practice/obj/Debug/net5.0/practice.genruntimeconfig.cache
 /Users/zuleiha/Desktop/practice/bin/Debug/net5.0/Humanizer.dll
 /Users/zuleiha/Desktop/practice/bin/Debug/net5.0/Microsoft.EntityFrameworkCore.Design.dll
+/Users/zuleiha/Desktop/practice/bin/Debug/net5.0/Flurl.dll
+/Users/zuleiha/Desktop/practice/bin/Debug/net5.0/Flurl.Http.dll

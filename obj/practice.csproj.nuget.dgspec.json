@@ -41,6 +41,14 @@
         "net5.0": {
           "targetAlias": "net5.0",
           "dependencies": {
+            "Flurl": {
+              "target": "Package",
+              "version": "[3.0.2, )"
+            },
+            "Flurl.Http": {
+              "target": "Package",
+              "version": "[3.2.0, )"
+            },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
               "version": "[5.0.13, )"

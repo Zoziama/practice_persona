@@ -12,6 +12,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using practice.BusinessLogic.Implementation;
+using practice.BusinessLogic.Interfaces;
 using practice.Domain.Access;
 
 namespace practice
@@ -34,6 +36,8 @@ namespace practice
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "practice", Version = "v1" });
             });
+            services.AddScoped<INinService, NinService>();
+            services.AddScoped<ISmsService, SmsService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

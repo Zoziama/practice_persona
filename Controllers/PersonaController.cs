@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using practice.BusinessLogic.Interfaces;
 using practice.Common;
 using practice.Domain.Access;
 using practice.Domain.Entities;
@@ -10,10 +12,17 @@ namespace practice.Controllers
     public class PersonaController : Controller
     {
         private readonly PersonaContext _personaContext;
+        private readonly INinService _ninService;
+        private readonly ISmsService _smsService;
 
-        public PersonaController(PersonaContext personaContext)
+        public PersonaController(PersonaContext personaContext, 
+            INinService ninService,
+            ISmsService smsService)
         {
             _personaContext = personaContext;
+            _ninService = ninService;
+            _smsService = smsService;
+
         }
         // GET
         [HttpGet("GetPersonas")]
@@ -39,7 +48,7 @@ namespace practice.Controllers
         }
         
         [HttpPost("AddPersona")]
-        public IActionResult AddPersona([FromBody] PersonaViewModel Request)
+        public async Task<IActionResult> AddPersona([FromBody] PersonaViewModel Request)
         {
             //check if phone number length is less or more than 11
             if (Request.PhoneNumber.Length > 11 || Request.PhoneNumber.Length < 11)
@@ -54,17 +63,18 @@ namespace practice.Controllers
                 return BadRequest("Invalid email format");
             }
             //request for NIN data from NIN service
-            
+
+            var N = await _ninService.GetNinData(Request.NIN);
+            if (N.response.Count is 0 || N.verificationStatus == "NOT VERIFIED")
+                return BadRequest("Invalid NIN");
             //check if Firstname, lastname, email and phone number match result from NIN service
+
+            var A = _ninService.isNinValid(Request, N);
             //if not return invalid data response
+            if (!A)
+                return BadRequest("Invalid details supplied");
             
             //save data to db
-            
-            //send request to sms service to send a default welcome message to persona phone number
-            
-            
-            
-            
             var NewPersona = _personaContext.Personas.Add(
                 new Persona
                 {
@@ -80,6 +90,16 @@ namespace practice.Controllers
 
                 });
             _personaContext.SaveChanges();
+            
+            //send request to sms service to send a default welcome message to persona phone number
+            var phoneno = N.response[0].telephoneno;
+            var s = await _smsService.SendSms(phoneno);
+
+            if (s.data.status != "success")
+            {
+                return BadRequest("Unable to send sms to your phone number");
+            }
+            
             return Ok("New Persona Ho");
         }
         
